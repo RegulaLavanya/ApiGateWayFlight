@@ -1,0 +1,234 @@
+  {
+    "Routes": [
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/login",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9006
+          }
+
+        ],
+        "UpstreamPathTemplate": "/login",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/user/register",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9006
+          }
+
+        ],
+        "UpstreamPathTemplate": "/user-register",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      //{
+      //  "DownstreamPathTemplate": "/api/v1.0/flight/admin/login",
+      //  "DownstreamScheme": "http",
+      //  "DownstreamHostAndPorts": [
+      //    {
+      //      "Host": "localhost",
+      //      "Port": 9006
+      //    }
+
+      //  ],
+      //  "UpstreamPathTemplate": "/admin-login",
+      //  "UpstreamHttpMethod": [ "Post" ]
+
+      //},
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/airline/register",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/airline-register",
+        "UpstreamHttpMethod": [ "Post" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "RouteClaimsRequirement": {
+          "Role": "Admin"
+        }
+
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/airline/inventory/add",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/airline-add",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/search",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/flightsearch",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/GetAirlines",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/GetAirlines",
+        "UpstreamHttpMethod": [ "Get" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/register",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/Flightregister",
+        "UpstreamHttpMethod": [ "Post" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "RouteClaimsRequirement": {
+          "Role": "Admin"
+        }
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/block",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/block",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/GetSchedule",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9007
+          }
+
+        ],
+        "UpstreamPathTemplate": "/GetSchedules",
+        "UpstreamHttpMethod": [ "Get" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/ticket/{pnr}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9008
+          }
+
+        ],
+        "UpstreamPathTemplate": "/ticket/{pnr}",
+        "UpstreamHttpMethod": [ "Get" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/flight/booking",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9008
+          }
+
+        ],
+        "UpstreamPathTemplate": "/booking",
+        "UpstreamHttpMethod": [ "Post" ]
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/booking/history/{emailid}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9008
+          }
+
+        ],
+        "UpstreamPathTemplate": "/bookinghistory/{emailid}",
+        "UpstreamHttpMethod": [ "Get" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "RouteClaimsRequirement": {
+          "Role": "User"
+        }
+
+      },
+      {
+        "DownstreamPathTemplate": "/api/v1.0/booking/cancel/{pnr}",
+        "DownstreamScheme": "http",
+        "DownstreamHostAndPorts": [
+          {
+            "Host": "localhost",
+            "Port": 9008
+          }
+
+        ],
+        "UpstreamPathTemplate": "/cancelbooking/{pnr}",
+        "UpstreamHttpMethod": [ "Delete" ],
+        "AuthenticationOptions": {
+          "AuthenticationProviderKey": "Bearer",
+          "AllowedScopes": []
+        },
+        "RouteClaimsRequirement": {
+          "Role": "User"
+        }
+
+      }
+
+
+    ]
+   
+  }
+
+
