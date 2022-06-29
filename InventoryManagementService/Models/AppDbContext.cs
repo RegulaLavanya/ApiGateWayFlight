@@ -16,5 +16,6 @@ namespace InventoryManagementService.Models
         public DbSet<Airlines> Airlines { get; set; }
         public DbSet<Flights> Flights { get; set; }
         public DbSet<FlightSchedules> FlightSchedules { get; set; }
+        public DbSet<Discounts> Discounts { get; set; }
     }
 }

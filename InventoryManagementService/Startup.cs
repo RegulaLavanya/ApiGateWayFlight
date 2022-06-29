@@ -27,14 +27,15 @@ namespace InventoryManagementService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddCors();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "InventoryManagementService", Version = "v1" });
             });
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer
-(@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
+   //(@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
+   (@"Data Source=tcp:bookingservicedbserver1.database.windows.net,1433;Initial Catalog=BookingService_db;User Id=Lavanya;Password=N@ncy424;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +47,11 @@ namespace InventoryManagementService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "InventoryManagementService v1"));
             }
+
+            app.UseCors(builder =>
+            {
+                builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+            });
 
             app.UseRouting();
 

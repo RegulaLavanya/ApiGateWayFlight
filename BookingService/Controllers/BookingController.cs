@@ -56,9 +56,9 @@ namespace BookingService.Controllers
                 bookData.Price = value.Price;
                 bookData.PNR = finalString;
                 bookData.ScheduleId = value.ScheduleId;
-                bookData.FlightId = value.FlightId;
+                bookData.FlightName = value.FlightName;
                 bookData.AirLineId = value.AirLineId;
-                bookData.FlightId = value.FlightId;
+               // bookData.FlightId = value.FlightId;
                 bookData.FromPlace = value.FromPlace;
                 bookData.ToPlace = value.ToPlace;
                 bookData.StartDateTime = value.StartDateTime;
@@ -89,9 +89,9 @@ namespace BookingService.Controllers
             {
                 var bookingDetails = _context.Bookings.Where(x => string.Equals(x.PNR, pnr)).FirstOrDefault();
                 if (bookingDetails != null)
-                    return bookingDetails;
+                    return Ok(bookingDetails);
                 else
-                    return BadRequest("Booking details not found with PNR");
+                    return NotFound("Booking details not found with PNR");
             }
             catch(Exception ex)
             {

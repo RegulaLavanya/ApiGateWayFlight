@@ -28,8 +28,8 @@ namespace InventoryManagementService.Controllers
         {
             try
             {
-                var fschedule = _context.Airlines.Where(x => Equals(x.IsActive, 1)).ToList();
-
+               var fschedule = _context.Airlines.Where(x => Equals(x.IsActive, 1)).ToList();
+             
                 if (fschedule != null)
                     
                     return Ok(fschedule);
@@ -45,7 +45,52 @@ namespace InventoryManagementService.Controllers
 
         }
 
-       // [HttpGet("api/v1.0/flight/GetFlightSchedules")]
+        /// <summary>
+        /// Get all airlines info
+        /// </summary>
+        /// <returns>Airline data</returns>
+        [HttpGet("api/v1.0/flight/GetAllAirlines")]
+        public ActionResult<Airlines> GetAllAirlines()
+        {
+            try
+            {
+                var fschedule = _context.Airlines.ToList();
+                if (fschedule != null)
+                    return Ok(fschedule);
+                else
+                    return NotFound("No data!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Exception in GetAirlines " + ex);
+            }
+
+        }
+
+        /// <summary>
+        /// Get Discount coupons
+        /// </summary>
+        /// <returns>Discount data</returns>
+        [HttpGet("api/v1.0/flight/GetDiscounts")]
+        public ActionResult<Airlines> GetDiscounts()
+        {
+            try
+            {
+                var discounts = _context.Discounts.ToList();
+                if (discounts != null)
+                    return Ok(discounts);
+                else
+                    return NotFound("No data!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Exception in GetDiscounts " + ex);
+            }
+
+        }
+
+
+        // [HttpGet("api/v1.0/flight/GetFlightSchedules")]
         //public ActionResult<Airlines> GetFlightSchedules()
         //{
         //    try
@@ -78,7 +123,36 @@ namespace InventoryManagementService.Controllers
         {
             try
             {
-                var result = from flightSchedules in _context.FlightSchedules where flightSchedules.StartDateTime >DateTime.Now
+                var result = (from x in _context.FlightSchedules
+                             join y in _context.Airlines
+                             on
+                             new
+                             { Key1 = x.AirLineId,key2=true, Key3 = x.StartDateTime > DateTime.Now, }
+                             equals
+                             new
+                             {
+                                 Key1 = y.Id,key2= y.IsActive == 1,
+                                 Key3 = true
+                             }
+                             join z in _context.Flights on x.FlightId equals z.Id
+                             select new
+                             {
+                                 FlightScheduleId = x.ID,
+                                 FlightName = z.FlightName,
+                                 AirLineId = x.AirLineId,
+                                 AirlineName = y.AirlineName,
+                                 FlightId = x.FlightId,
+                                 FromPlace = x.FromPlace,
+                                 ToPlace = x.ToPlace,
+                                 StartDateTime = x.StartDateTime,
+                                 EndDateTime = x.EndDateTime,
+                                 BusinessTicketCost = x.BusinessTicketCost,
+                                 NonBusinessTicketCost = x.NonBusinessTicketCost
+
+                             }
+                             );
+
+               /* var result = from flightSchedules in _context.FlightSchedules where flightSchedules.StartDateTime >DateTime.Now
                              join airlines in _context.Airlines on flightSchedules.AirLineId equals airlines.Id
                                                                    //  airlines.IsActive=1
                              join flights in _context.Flights on flightSchedules.FlightId equals flights.Id
@@ -96,7 +170,7 @@ namespace InventoryManagementService.Controllers
                                  BusinessTicketCost = flightSchedules.BusinessTicketCost,
                                  NonBusinessTicketCost = flightSchedules.NonBusinessTicketCost
 
-                             };
+                             };*/
                 // var fschedule = new FlightSchedules();
              //   var fschedule = _context.FlightSchedules.Where(x => x.StartDateTime >= DateTime.Now ).ToList();
 
@@ -129,7 +203,10 @@ namespace InventoryManagementService.Controllers
 
                 if (fschedule != null)
                 {
+                    if(airline.IsActive == 1)
                     fschedule.IsActive = 0;
+                    else if (airline.IsActive == 0)
+                        fschedule.IsActive = 1;
                     _context.SaveChanges();
                     return Ok(fschedule);
                 }
@@ -149,8 +226,7 @@ namespace InventoryManagementService.Controllers
         /// </summary>
         /// <param name="airline">Airline details</param>
         /// <returns></returns>
-        [HttpPost]
-        [Route("api/v1.0/flight/airline/register")]
+        [HttpPost("api/v1.0/flight/airline/register")]
         public  ActionResult<Airlines> RegisterAirline([FromBody] Airlines airline)
         {
             try
@@ -176,6 +252,34 @@ namespace InventoryManagementService.Controllers
             catch (Exception ex)
             {
                 return BadRequest("Exception in register airline method" + ex.ToString());
+            }
+        }
+
+        [HttpPost("api/v1.0/flight/AddDiscounts")]
+        public ActionResult<Discounts> AddDiscounts([FromBody] Discounts discount)
+        {
+            try
+            {
+                var couponData = new Discounts();
+
+                var result = _context.Discounts.Where(x => string.Equals(x.DiscountCoupon.ToLower(), discount.DiscountCoupon.ToLower())).FirstOrDefault();
+                if (result != null)
+                    return NotFound("coupon exsist please give different name!");
+                else
+                {
+
+                    couponData.DiscountCoupon = discount.DiscountCoupon;
+                    couponData.Amount = discount.Amount;
+                    _context.Discounts.Add(couponData);
+                    _context.SaveChanges();
+
+                    return Ok(couponData);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Exception in Add discounts" + ex.ToString());
             }
         }
 
@@ -258,12 +362,44 @@ namespace InventoryManagementService.Controllers
         {
             try
             {
+             
                 var searchData = _context.FlightSchedules.Where(x => 
                 (x.StartDateTime >= schedules.StartDateTime && x.EndDateTime <= schedules.EndDateTime) &&
                 (x.FromPlace.ToLower() == schedules.FromPlace.ToLower())
                 && x.ToPlace.ToLower() == schedules.ToPlace.ToLower() && x.IsActive == 1).ToList();
-                if (searchData != null && searchData.Count>0)
-                    return Ok(searchData);
+
+                var result = (from x in searchData
+                              join y in _context.Airlines
+
+                              on
+                              new
+                              { Key1 = x.AirLineId, key2 = true, Key3 = x.StartDateTime > DateTime.Now, }
+                              equals
+                              new
+                              {
+                                  Key1 = y.Id,
+                                  key2 = y.IsActive == 1,
+                                  Key3 = true
+                              }
+                              join z in _context.Flights on x.FlightId equals z.Id
+                              select new
+                              {
+                                  FlightScheduleId = x.ID,
+                                  FlightName = z.FlightName,
+                                  AirLineId = x.AirLineId,
+                                  AirlineName = y.AirlineName,
+                                  FlightId = x.FlightId,
+                                  FromPlace = x.FromPlace,
+                                  ToPlace = x.ToPlace,
+                                  StartDateTime = x.StartDateTime,
+                                  EndDateTime = x.EndDateTime,
+                                  BusinessTicketCost = x.BusinessTicketCost,
+                                  NonBusinessTicketCost = x.NonBusinessTicketCost
+
+                              }
+                          );
+                if (result != null) // && result.Count>0)
+                    return Ok(result);
                 else
                     return NotFound("No Flights!");
             }

@@ -24,7 +24,7 @@ namespace AuthenticationService.Controllers
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetWhetherForecasr"), Authorize(Roles = "User")]
+        [HttpGet(Name = "GetWhetherForecasr")]
         public IEnumerable<WeatherForecast> Get()
         {
             var rng = new Random();

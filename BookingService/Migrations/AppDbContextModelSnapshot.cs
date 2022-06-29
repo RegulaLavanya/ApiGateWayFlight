@@ -38,8 +38,8 @@ namespace BookingService.Migrations
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FlightId")
-                        .HasColumnType("int");
+                    b.Property<string>("FlightName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FromPlace")
                         .HasColumnType("nvarchar(max)");

@@ -37,6 +37,24 @@ namespace InventoryManagementService.Migrations
                     b.ToTable("Airlines");
                 });
 
+            modelBuilder.Entity("InventoryManagementService.Models.Discounts", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("DiscountCoupon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discounts");
+                });
+
             modelBuilder.Entity("InventoryManagementService.Models.FlightSchedules", b =>
                 {
                     b.Property<int>("ID")

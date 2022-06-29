@@ -35,7 +35,7 @@ namespace BookingService.Models
         public DateTime EndDateTime { get; set; }
 
         public int AirLineId { get; set; }
-        public int FlightId { get; set; }
+        public string FlightName { get; set; }
 
 
     }
