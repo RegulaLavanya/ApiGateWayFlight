@@ -10,8 +10,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using RabbitMQ.Client;
+using Microsoft.Extensions.ObjectPool;
 
 namespace BookingService
 {
@@ -34,9 +37,17 @@ namespace BookingService
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "BookingService", Version = "v1" });
             });
 
+          //  var rabbitConfig = Configuration.GetSection("rabbit");
+          //  services.Configure<Rabbitsettings>(rabbitConfig);
+
+          //  services.AddSingleton<ObjectPoolProvider, DefaultObjectPoolProvider>();
+         //   services.AddSingleton<IPooledObjectPolicy<IModel>, RabbitModelPooledObjectPolicy>();
+
+           // services.AddSingleton<IRabbitManager, RabbitManager>();
+
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer
-            //  (@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
-            (@"Server=tcp:bookingservicedbserver1.database.windows.net,1433;Initial Catalog=BookingService_db;Persist Security Info=False;User ID=Lavanya;Password=N@ncy424;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
+            (@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
+            //(@"Server=tcp:bookingservicedbserver1.database.windows.net,1433;Initial Catalog=BookingService_db;Persist Security Info=False;User ID=Lavanya;Password=N@ncy424;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

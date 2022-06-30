@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.ObjectPool;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
@@ -8,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace BookingService.Models
 {
-    public class Rabbitprod: IMessageProducer
+    public class Rabbitprod
     {
-        public void SendMessage<T>(T Message)
+        public static void SendMessage<T>(T Message)
         {
             var factory = new ConnectionFactory
             {
@@ -21,18 +23,20 @@ namespace BookingService.Models
 
             var channel = connection.CreateModel();
 
-         //   QueueProducer.Publish(channel);
+            //   QueueProducer.Publish(channel);
 
             channel.QueueDeclare("schedule", durable: true,
                exclusive: false,
                autoDelete: false,
                arguments: null);
             var count = 10;
-            var message = new { Name = "Producer", Message = $"ScheduleId:{ count }" };
+            var message = new { Name = "Producer", Message = $"ScheduleId:{ Message }" };
 
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
 
             channel.BasicPublish("", "schedule", null, body);
         }
+     
+         
     }
 }

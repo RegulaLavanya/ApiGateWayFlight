@@ -7,6 +7,7 @@ namespace BookingService.Models
 {
     public interface IMessageProducer
     {
-        void SendMessage<T>(T message);
+        void Publish<T>(T message, string exchangeName, string exchangeType, string routeKey)
+       where T : class;
     }
 }

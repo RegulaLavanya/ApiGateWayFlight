@@ -8,6 +8,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.ObjectPool;
+//using Microsoft.EntityFrameworkCore.Metadata;
+using RabbitMQ.Client;
+using System.Text;
 
 namespace BookingService.Controllers
 {
@@ -17,12 +21,12 @@ namespace BookingService.Controllers
     {
 
         public AppDbContext _context;
-       // private readonly IMessageProducer _messageProducer;
+        private readonly IMessageProducer _messageProducer;
+        private readonly DefaultObjectPool<IModel> _objectPool;
+
         public BookingController(AppDbContext context)
-            //, IMessageProducer messageProducer)
         {
             _context = context;
-           // _messageProducer = messageProducer;
         }
 
         /// <summary>
@@ -35,41 +39,50 @@ namespace BookingService.Controllers
         {
             try
             {
+              //  var msg = JsonConvert.DeserializeObject<Dictionary<string, int>>(value.NoOfSeats, value.ScheduleId);
+                Rabbitprod.SendMessage((value.NoOfSeats,value.ScheduleId));
+               // Publish<string>(Convert.ToString(value.NoOfSeats));
+               // channel.BasicPublish("", "schedule", null, body);
+               // exchangeName - "",rouutekey - scehdule,
+
+
                 var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-                var stringChars = new char[8];
-                var random = new Random();
+                 var stringChars = new char[8];
+                 var random = new Random();
 
-                for (int i = 0; i < stringChars.Length; i++)
-                {
-                    stringChars[i] = chars[random.Next(chars.Length)];
-                }
+                 for (int i = 0; i < stringChars.Length; i++)
+                 {
+                     stringChars[i] = chars[random.Next(chars.Length)];
+                 }
 
-                var finalString = new String(stringChars);
+                 var finalString = new String(stringChars);
 
-                var bookData = new Bookings();
-                bookData.UserName = value.UserName;
-                bookData.EmailId = value.EmailId;
-                bookData.NoOfSeats = value.NoOfSeats;
-                bookData.DetailsOfPassenger = value.DetailsOfPassenger;
-                bookData.MealOption = value.MealOption;
-                bookData.SeatNUmbers = value.SeatNUmbers;
-                bookData.Price = value.Price;
-                bookData.PNR = finalString;
-                bookData.ScheduleId = value.ScheduleId;
-                bookData.FlightName = value.FlightName;
-                bookData.AirLineId = value.AirLineId;
-               // bookData.FlightId = value.FlightId;
-                bookData.FromPlace = value.FromPlace;
-                bookData.ToPlace = value.ToPlace;
-                bookData.StartDateTime = value.StartDateTime;
-                bookData.EndDateTime = value.EndDateTime;
+                 var bookData = new Bookings();
+                 bookData.UserName = value.UserName;
+                 bookData.EmailId = value.EmailId;
+                 bookData.NoOfSeats = value.NoOfSeats;
+                 bookData.DetailsOfPassenger = value.DetailsOfPassenger;
+                 bookData.MealOption = value.MealOption;
+                 bookData.SeatNUmbers = value.SeatNUmbers;
+                 bookData.Price = value.Price;
+                 bookData.PNR = finalString;
+                 bookData.ScheduleId = value.ScheduleId;
+                 bookData.FlightName = value.FlightName;
+                 bookData.AirLineId = value.AirLineId;
+                // bookData.FlightId = value.FlightId;
+                 bookData.FromPlace = value.FromPlace;
+                 bookData.ToPlace = value.ToPlace;
+                 bookData.StartDateTime = value.StartDateTime;
+                 bookData.EndDateTime = value.EndDateTime;
 
-               //var scheduledata = new FlightSchedules();
-               //scheduledata = _context.FlightSchedules.Where(x => Int64.Equals(x.ID, scheduleid)).FirstOrDefault();
-                _context.Bookings.Add(bookData);
-                _context.SaveChanges();
-                return Ok( bookData);
-                //return Ok(new { bookData, scheduledata });
+
+                //var scheduledata = new FlightSchedules();
+                //scheduledata = _context.FlightSchedules.Where(x => Int64.Equals(x.ID, scheduleid)).FirstOrDefault();
+                 _context.Bookings.Add(bookData);
+                 _context.SaveChanges();
+                 return Ok( bookData);
+                // return Ok(new { bookData, scheduledata });
+                
             }
             catch (Exception ex)
             {
@@ -148,6 +161,54 @@ namespace BookingService.Controllers
                 return BadRequest("Exception in CancelBooking" + ex.ToString());
             }
 
+        }
+
+        public void Publish<T>(T message) where T : class
+        {
+            var factory = new ConnectionFactory
+            {
+                Uri = new System.Uri("amqp://guest:guest@localhost:5672")
+            };
+
+            var connection = factory.CreateConnection();
+
+            var channel = connection.CreateModel();
+
+            channel.QueueDeclare("queue1", durable: true,
+               exclusive: false,
+               autoDelete: false,
+               arguments: null);
+            var count = 10;
+            var message1 = new { Name = "Producer", Message = $"From Producer:{ count }" };
+
+            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message1));
+
+            channel.BasicPublish("", "queue12", null, body);
+            /*  if (message == null)
+                  return;
+
+              var channel = _objectPool.Get();
+
+              try
+              {
+                  channel.ExchangeDeclare(exchangeName, exchangeType, true, false, null);
+
+                  var sendBytes = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(message));
+
+                  var properties = channel.CreateBasicProperties();
+                  properties.Persistent = true;
+
+                  channel.BasicPublish(exchangeName, routeKey, properties, sendBytes);
+
+              }
+              catch (Exception ex)
+              {
+                  throw ex;
+              }
+              finally
+              {
+                  _objectPool.Return(channel);
+              }*/
         }
     }
 

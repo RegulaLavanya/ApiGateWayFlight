@@ -39,8 +39,8 @@ namespace AuthenticationService
             });
 
             services.AddDbContextPool<AppDbContext>(options => options.UseSqlServer
-           //  (@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
-           (@"Data Source=tcp:bookingservicedbserver1.database.windows.net,1433;Initial Catalog=BookingService_db;User Id=Lavanya;Password=N@ncy424;"));
+           (@"Server=(localdb)\mssqllocaldb;Initial Catalog=AirlineManagement;Integrated Security=True;Trusted_Connection=True;"));
+        //   (@"Data Source=tcp:bookingservicedbserver1.database.windows.net,1433;Initial Catalog=BookingService_db;User Id=Lavanya;Password=N@ncy424;"));
 
             services.AddSwaggerGen(options =>
             {
